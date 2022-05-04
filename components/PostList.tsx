@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Text, View} from 'react-native';
+import { getPosts } from '../models/posts';
+import Post from '../interfaces/post';
 
 export default function PostList() {
-    const [posts, setPosts] = useState([]);
+    const [posts, setPosts] = useState<Post[] | any>([]);
 
-    useEffect(() => {
-        fetch("https://ladda.emilfolino.se")
-        .then(response => response.json())
-        .then(result => setPosts(result.data));
+    useEffect(async () => {
+        setPosts(await getPosts());
     }, []);
 
     const listOfPosts = posts.map((post, index) => {

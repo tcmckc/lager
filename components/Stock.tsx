@@ -1,41 +1,44 @@
 import { useState, useEffect } from 'react';
 import { Text, View } from 'react-native';
-import config from "../config/config.json";
+// import config from "../config/config.json";
+import { Typography } from '../styles';
+import productModel from '../models/products.ts';
 
-function StockList() {
-    const [products, setProducts] = useState([]);
-  
-    useEffect(() => {
-        fetch(`${config.base_url}/products?api_key=${config.api_key}`)
-        .then(response => response.json())
-        .then(result => setProducts(result.data));
-    }, []);
-  
-    const list = products.map((product, index) => <Text key={index} style={{color: '#FFFFFF', fontFamily: 'Verdana', lineHeight: 20}}>{ product.name } - { product.stock }</Text>);
-  
-    return (
-      <View>
-        <Text style={{color: '#FFFFFF', fontSize: 16, fontFamily: 'Verdana-Bold', marginBottom: 10}}>Namn - Lagersaldot</Text>
-        {list}
-      </View>
-    );
-}
-
-export default function Stock() {
+export default function Stock({products, setProducts}) {
   return (
       <View>
-        <Text style={{color: '#97B37D', fontSize: 22, fontFamily: 'Verdana', marginTop: 20, marginBottom: 20}}>Lagerförteckning</Text>
-        <StockList />
+        <Text style={Typography.header2}>Lagerförteckning</Text>
+        <StockList products={products} setProducts={setProducts} />
       </View>
   );
 }
 
+function StockList({products, setProducts}) {
+    // const [products, setProducts] = useState([]);
+  
+    // useEffect(() => {
+    //     fetch(`${config.base_url}/products?api_key=${config.api_key}`)
+    //     .then(response => response.json())
+    //     .then(result => setProducts(result.data));
+    // }, []); 
 
-// export default function Stock() {
-//   return (
-//       <View>
-//         <Text style={{color: '#97B37D', fontSize: 22}}>Lagerförteckning</Text>
-//         <StockList />
-//       </View>
-//   );
-// }
+    useEffect(() => {
+      (async () => {
+        const allProducts = await productModel.getProducts();
+        setProducts(allProducts);
+      })();
+    }, []);
+  
+    const list = products.map((product, index) => 
+      <Text key={index} style={Typography.normal}>
+        { product.name } - { product.stock }
+      </Text>
+    );
+  
+    return (
+      <View>
+        <Text style={Typography.header3}>Namn - Lagersaldot</Text>
+        {list}
+      </View>
+    );
+}
